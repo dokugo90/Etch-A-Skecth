@@ -1,138 +1,144 @@
-const DEFAULT_COLOR = 'red'
-const DEFAULT_MODE = 'color'
-const DEFAULT_SIZE = 16
+//Query's
+const start = document.querySelector(".start-btn")
+const intro = document.querySelector(".title")
+const animate = document.querySelector(".ani")
+const grid =  document.querySelector("#grid")
+const clearBtn = document.querySelector(".clear")
+const eraseBtn = document.querySelector(".erase")
+const colorBtn = document.querySelector(".color")
+const rainbowBtn = document.querySelector(".rainbow")
+const button = document.querySelector(".button")
+const colorPicker = document.querySelector(".colorPicker")
+const Slider = document.querySelector("#sizeSlider")
+const sizeText = document.querySelector(".sizeValue")
+const background = document.querySelector(".background")
 
-let currentColor = DEFAULT_COLOR
-let currentMode = DEFAULT_MODE
-let currentSize = DEFAULT_SIZE
-
-function setCurrentColor(newColor) {
-  currentColor = newColor
+function setSize(value) {
+    differentSize = value;
 }
 
-function setCurrentMode(newMode) {
-  activateButton(newMode)
-  currentMode = newMode
-}
+//Event Bools
+let mousedown = false;
+let dblclick = false
+let click = false
 
-function setCurrentSize(newSize) {
-  currentSize = newSize
-}
+//Variables
+const initialSize = 16;
+let differentSize = initialSize;
+let defaultColor = 'black';
+let defaultMode = 'color';
 
-const colorPicker = document.getElementById('colorPicker')
-const colorBtn = document.getElementById('colorBtn')
-const rainbowBtn = document.getElementById('rainbowBtn')
-const eraserBtn = document.getElementById('eraserBtn')
-const clearBtn = document.getElementById('clearBtn')
-const sizeValue = document.getElementById('sizeValue')
-const sizeSlider = document.getElementById('sizeSlider')
-const grid = document.getElementById('grid')
-const themeBtn = document.getElementById('theme')
-const body = document.querySelector('body')
-const normal = document.getElementById('normal')
-const footer = document.querySelector('footer')
-const svg = document.querySelector('svg')
 
-colorPicker.oninput = (e) => setCurrentColor(e.target.value)
-colorBtn.onclick = () => setCurrentMode('color')
-rainbowBtn.onclick = () => setCurrentMode('rainbow')
-eraserBtn.onclick = () => setCurrentMode('eraser')
-themeBtn.onclick = () => setCurrentMode('change theme')
-clearBtn.onclick = () => reloadGrid()
-sizeSlider.onmousemove = (e) => updateSizeValue(e.target.value)
-sizeSlider.onchange = (e) => changeSize(e.target.value)
+document.onmousedown = () => (mousedown = true);
+document.onmouseup = () => (mousedown = false);
+document.ondblclick = () => (dblclick = true)
+document.onclick = () => (click = true)
 
-let mouseDown = false
-document.body.onmousedown = () => (mouseDown = true)
-document.body.onmouseup = () => (mouseDown = false)
 
-function changeSize(value) {
-  setCurrentSize(value)
-  updateSizeValue(value)
-  reloadGrid()
+//Open Function
+function Open() {
+start.style.transform = 'scale(0)'
+intro.style.transform = 'scale(0)'
+animate.style.display = 'none'
+grid.style.transform = 'scale(1)'
+button.style.transform = 'scale(1)'
+document.body.style.overflowY = 'scroll'
+};
+
+function setColor(color) {
+checkButton(color)
+defaultColor = color
 }
 
 function updateSizeValue(value) {
-  sizeValue.innerHTML = `${value} x ${value}`
+    sizeText.textContent  = `${value} x ${value}`
 }
 
-function reloadGrid() {
-  clearGrid()
-  setupGrid(currentSize)
+function ChangeSize(size) {
+    setSize(size)
+    resetGrid()
 }
 
-function clearGrid() {
-  grid.innerHTML = ''
+function resetGrid() {
+    Clear()
+    GridSize(differentSize)
 }
 
-function setupGrid(size) {
-  grid.style.gridTemplateColumns = `repeat(${size}, 1fr)`
-  grid.style.gridTemplateRows = `repeat(${size}, 1fr)`
-
-  for (let i = 0; i < size * size; i++) {
-    const gridElement = document.createElement('div')
-    gridElement.classList.add('grid-element')
-    gridElement.addEventListener('mouseover', changeColor)
-    gridElement.addEventListener('mousedown', changeColor)
-    grid.appendChild(gridElement)
-    themeBtn.addEventListener('click', () => {
-        body.style.backgroundColor = 'black'
-        colorPicker.style.backgroundColor = 'black'
-        sizeValue.style.color = '#ededed'
-        sizeSlider.style.backgroundColor = 'black'
-        footer.style.color = '#ededed'
-        svg.style.color = '#ededed'
-        })
-        normal.addEventListener('click', () => {
-            body.style.backgroundColor = '#ededed'
-            colorPicker.style.backgroundColor = '#ededed'
-            sizeValue.style.color = 'black'
-            sizeSlider.style.backgroundColor = '#ededed'
-            footer.style.color = 'black'
-            svg.style.color = 'black'
-            
-        })
-  }
+function Clear() {
+grid.innerHTML = ''
 }
 
-function changeColor(e) {
-  if (e.type === 'mouseover' && !mouseDown) return
-  if (currentMode === 'rainbow') {
+function setGridColor(value) {
+    grid.style.backgroundColor = value
+}
+
+function GridSize(value) {
+grid.style.gridTemplateColumns = `repeat(${value}, 1fr)`
+grid.style.gridTemplateRows = `repeat(${value}, 1fr)`
+
+for (let i = 0; i < value * value; i++) {
+const gridElement = document.createElement('div')
+gridElement.classList.add('gridcell')
+gridElement.addEventListener('mouseover', ChangeColor)
+gridElement.addEventListener("mousedown", ChangeColor)
+grid.appendChild(gridElement)
+};
+}
+
+function ChangeColor(e) {
+    if (e.type === 'mouseover' && !mousedown) return;
+    if (e.type === 'mouseup' && dblclick) return;
+    if (e.type === 'mouseover' && mousedown || click) {
+    e.target.style.backgroundColor = defaultColor 
+    }
+    if (defaultColor == 'erase') {
+    e.target.style.backgroundColor = background.value
+    }
+    if (defaultColor == 'color') {
+    e.target.style.backgroundColor = colorPicker.value
+    }
+    if (defaultColor == 'rainbow') {
     const randomR = Math.floor(Math.random() * 256)
     const randomG = Math.floor(Math.random() * 256)
     const randomB = Math.floor(Math.random() * 256)
     e.target.style.backgroundColor = `rgb(${randomR}, ${randomG}, ${randomB})`
-  } else if (currentMode === 'color') {
-    e.target.style.backgroundColor = currentColor
-  } else if (currentMode === 'eraser') {
-    e.target.style.backgroundColor = '#fefefe'
-  }
-}
+    }
+    if (defaultColor == 'pick') {
+        e.target.style.backgroundColor = colorPicker.value
+    }
+    }
 
-function activateButton(newMode) {
-  if (currentMode === 'rainbow') {
-    rainbowBtn.classList.remove('active')
-  } else if (currentMode === 'color') {
-    colorBtn.classList.remove('active')
-  } else if (currentMode === 'eraser') {
-    eraserBtn.classList.remove('active')
-  }
+    function checkButton(mode) {
+        if (defaultColor === 'rainbow') {
+            rainbowBtn.classList.remove("selected")
+        } else if (defaultColor === 'color') {
+            colorBtn.classList.remove("selected")
+        } else if (defaultColor === 'erase') {
+            eraseBtn.classList.remove("selected")
+        }
+        
+        if (mode === 'rainbow') {
+            rainbowBtn.classList.add("selected")
+        } else if (mode === 'color') {
+            colorBtn.classList.add("selected")
+        } else if (mode === 'erase') {
+            eraseBtn.classList.add("selected")
+        }
+    }
 
-  if (newMode === 'rainbow') {
-    rainbowBtn.classList.add('active')
-  } else if (newMode === 'color') {
-    colorBtn.classList.add('active')
-  } else if (newMode === 'eraser') {
-    eraserBtn.classList.add('active')
-  } 
-  }
-
-
-window.onload = () => {
-  setupGrid(DEFAULT_SIZE)
-  activateButton(DEFAULT_MODE)
-}
-
+background.oninput = (e) => setGridColor(e.target.value)
+Slider.onmousemove = (e) => updateSizeValue(e.target.value)
+Slider.onchange = (e) => ChangeSize(e.target.value)
+colorPicker.onclick = () => setColor('pick')
+rainbowBtn.onclick = () => setColor('rainbow')
+colorBtn.onclick = () => setColor('color')
+eraseBtn.onclick = () => setColor('erase');
+clearBtn.addEventListener("click", resetGrid)
+start.addEventListener("click", Open)
+window.addEventListener("load", () => {
+    GridSize(initialSize)
+    checkButton()
+})
 
 
 
