@@ -115,6 +115,8 @@ function ChangeColor(e) {
             colorBtn.classList.remove("selected")
         } else if (defaultColor === 'erase') {
             eraseBtn.classList.remove("selected")
+        } else if (defaultColor === 'pick') {
+            colorBtn.classList.remove("selected")
         }
         
         if (mode === 'rainbow') {
@@ -123,6 +125,8 @@ function ChangeColor(e) {
             colorBtn.classList.add("selected")
         } else if (mode === 'erase') {
             eraseBtn.classList.add("selected")
+        } else if (mode === 'pick') {
+            colorBtn.classList.add("selected")
         }
     }
 
